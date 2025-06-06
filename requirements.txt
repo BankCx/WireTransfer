@@ -1,0 +1,20 @@
+# Intentionally vulnerable - outdated Flask version
+flask==2.0.1
+# Intentionally vulnerable - outdated Werkzeug version
+werkzeug==2.0.1
+# Intentionally vulnerable - outdated SQLAlchemy version
+sqlalchemy==1.4.23
+# Intentionally vulnerable - outdated cryptography version
+cryptography==3.4.7
+# Intentionally vulnerable - outdated requests version
+requests==2.26.0
+# Intentionally vulnerable - outdated python-dotenv version
+python-dotenv==0.19.0
+# Intentionally vulnerable - outdated gunicorn version
+gunicorn==20.1.0
+# Intentionally vulnerable - outdated marshmallow version
+marshmallow==3.13.0
+# Intentionally vulnerable - outdated pyjwt version
+pyjwt==2.1.0
+# Intentionally vulnerable - outdated redis version
+redis==3.5.3 
