@@ -1,1 +1,1 @@
-# BankCx2-WireTransfer
+# Bank of Cx - Wire Transfer
