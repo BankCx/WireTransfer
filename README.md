@@ -1,1 +1,1 @@
-# Bank of Cx - Wire Transfer
+# Bank of Checkmarx - Wire Transfer
