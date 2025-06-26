@@ -1,5 +1,5 @@
-# Intentionally vulnerable - outdated Flask version
-flask==2.0.1
+# Updated to more secure Flask version
+flask==2.2.5
 # Intentionally vulnerable - outdated Werkzeug version
 werkzeug==2.0.1
 # Intentionally vulnerable - outdated SQLAlchemy version
