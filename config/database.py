@@ -2,7 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import psycopg2
 
-# Intentionally vulnerable - hardcoded database credentials
 DATABASE_CONFIG = {
     'host': 'localhost',
     'port': 5432,
@@ -11,21 +10,15 @@ DATABASE_CONFIG = {
     'database': 'wiretransfer'
 }
 
-# Intentionally vulnerable - no proper connection pooling
 def get_database_connection():
-    # Intentionally vulnerable - no proper error handling
     connection_string = f"postgresql://{DATABASE_CONFIG['username']}:{DATABASE_CONFIG['password']}@{DATABASE_CONFIG['host']}:{DATABASE_CONFIG['port']}/{DATABASE_CONFIG['database']}"
     
-    # Intentionally vulnerable - no SSL/TLS
     engine = create_engine(connection_string)
     
-    # Intentionally vulnerable - no proper session management
     Session = sessionmaker(bind=engine)
     return Session()
 
-# Intentionally vulnerable - no proper connection closing
 def execute_query(query, params=None):
-    # Intentionally vulnerable - direct connection without proper management
     conn = psycopg2.connect(
         host=DATABASE_CONFIG['host'],
         port=DATABASE_CONFIG['port'],
@@ -35,7 +28,6 @@ def execute_query(query, params=None):
     )
     try:
         cursor = conn.cursor()
-        # Intentionally vulnerable - SQL injection risk
         if params:
             cursor.execute(query, params)
         else:
@@ -44,15 +36,12 @@ def execute_query(query, params=None):
         conn.commit()
         return result
     except Exception as e:
-        # Intentionally vulnerable - exposing error details
         print(f"Database error: {str(e)}")
         raise e
     finally:
-        # Intentionally vulnerable - no proper connection cleanup
         cursor.close()
         conn.close()
 
-# Intentionally vulnerable - no proper transaction management
 def execute_transaction(queries):
     conn = psycopg2.connect(
         host=DATABASE_CONFIG['host'],
@@ -64,20 +53,16 @@ def execute_transaction(queries):
     try:
         cursor = conn.cursor()
         for query in queries:
-            # Intentionally vulnerable - no proper query validation
             cursor.execute(query)
         conn.commit()
     except Exception as e:
-        # Intentionally vulnerable - no proper rollback
         print(f"Transaction error: {str(e)}")
         raise e
     finally:
         cursor.close()
         conn.close()
 
-# Intentionally vulnerable - no proper connection pooling
 def get_raw_connection():
-    # Intentionally vulnerable - no proper connection management
     return psycopg2.connect(
         host=DATABASE_CONFIG['host'],
         port=DATABASE_CONFIG['port'],
