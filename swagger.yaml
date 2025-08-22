@@ -1,0 +1,327 @@
+openapi: 3.0.0
+info:
+  title: Bank of Checkmarx - Wire Transfer API
+  description: |
+    API for the wire transfer service of the Bank of Checkmarx demo application
+    
+    ## Features
+    - International wire transfers
+    - Transfer status tracking
+    - Authentication and authorization
+    - Transfer history and audit trails
+    
+    ## Security Notice
+    This is a demo application with intentionally vulnerable endpoints for security testing purposes.
+  version: 1.0.0
+  contact:
+    name: Bank of Checkmarx - Wire Transfer Team
+    email: wire-transfer@bankofcheckmarx.com
+
+servers:
+  - url: http://localhost:5000
+    description: Development server
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Check if the wire transfer service is healthy
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+
+  /api/v1/transfers:
+    post:
+      summary: Create a new wire transfer
+      description: Initiate a new international wire transfer
+      tags:
+        - Transfers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - from_account
+                - to_account
+                - amount
+              properties:
+                from_account:
+                  type: string
+                  description: Source account identifier
+                  example: "ACC123456"
+                to_account:
+                  type: string
+                  description: Destination account identifier
+                  example: "ACC789012"
+                amount:
+                  type: number
+                  format: float
+                  description: Transfer amount
+                  minimum: 0.01
+                  example: 1000.00
+                currency:
+                  type: string
+                  description: Currency code
+                  example: "USD"
+                  default: "USD"
+                description:
+                  type: string
+                  description: Transfer description
+                  example: "International payment"
+                recipient_bank:
+                  type: string
+                  description: Recipient bank information
+                  example: "Bank of America"
+                swift_code:
+                  type: string
+                  description: SWIFT/BIC code
+                  example: "BOFAUS3N"
+      responses:
+        '201':
+          description: Transfer created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Transfer ID
+                    example: "TXN001234567"
+                  status:
+                    type: string
+                    enum: [pending, processing, completed, failed, cancelled]
+                    description: Transfer status
+                    example: "pending"
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: Transfer creation timestamp
+                    example: "2024-01-15T10:30:00Z"
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/transfers/{transfer_id}:
+    get:
+      summary: Get transfer details
+      description: Retrieve details of a specific wire transfer
+      tags:
+        - Transfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: transfer_id
+          in: path
+          required: true
+          description: Transfer ID
+          schema:
+            type: string
+          example: "TXN001234567"
+      responses:
+        '200':
+          description: Transfer details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Transfer ID
+                    example: "TXN001234567"
+                  from_account:
+                    type: string
+                    description: Source account
+                    example: "ACC123456"
+                  to_account:
+                    type: string
+                    description: Destination account
+                    example: "ACC789012"
+                  amount:
+                    type: number
+                    format: float
+                    description: Transfer amount
+                    example: 1000.00
+                  currency:
+                    type: string
+                    description: Currency code
+                    example: "USD"
+                  status:
+                    type: string
+                    enum: [pending, processing, completed, failed, cancelled]
+                    description: Transfer status
+                    example: "completed"
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: Transfer creation timestamp
+                    example: "2024-01-15T10:30:00Z"
+                  completed_at:
+                    type: string
+                    format: date-time
+                    description: Transfer completion timestamp
+                    example: "2024-01-15T11:45:00Z"
+                  description:
+                    type: string
+                    description: Transfer description
+                    example: "International payment"
+                  recipient_bank:
+                    type: string
+                    description: Recipient bank
+                    example: "Bank of America"
+                  swift_code:
+                    type: string
+                    description: SWIFT/BIC code
+                    example: "BOFAUS3N"
+                  fees:
+                    type: number
+                    format: float
+                    description: Transfer fees
+                    example: 25.00
+                  exchange_rate:
+                    type: number
+                    format: float
+                    description: Exchange rate applied
+                    example: 1.0
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Transfer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update transfer status
+      description: Update the status of an existing wire transfer
+      tags:
+        - Transfers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: transfer_id
+          in: path
+          required: true
+          description: Transfer ID
+          schema:
+            type: string
+          example: "TXN001234567"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [pending, processing, completed, failed, cancelled]
+                  description: New transfer status
+                  example: "completed"
+                reason:
+                  type: string
+                  description: Reason for status change
+                  example: "Transfer completed successfully"
+      responses:
+        '200':
+          description: Transfer status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "TXN001234567"
+                  status:
+                    type: string
+                    example: "completed"
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: "2024-01-15T11:45:00Z"
+        '400':
+          description: Invalid status transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Transfer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT Bearer token authentication. 
+        Include the token in the Authorization header as: `Bearer <your-token>`
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Transfer not found"
+
+    TransferStatus:
+      type: string
+      enum: [pending, processing, completed, failed, cancelled]
+      description: Transfer status enumeration
